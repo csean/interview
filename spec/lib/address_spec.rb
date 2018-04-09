@@ -61,12 +61,31 @@ RSpec.describe Address do
     let(:detroit) { FactoryGirl.build :address, :as_detroit }
     let(:kansas_city) { FactoryGirl.build :address, :as_kansas_city }
 
-    xit 'calculates distance with the Geocoder API' do
+    it 'calculates distance with the Geocoder API' do
       expect(Geocoder::Calculations).to receive(:distance_between).with detroit.coordinates, kansas_city.coordinates
+      detroit.miles_to(kansas_city)
     end
 
-    xit 'returns the distance between two addresses' do
+    it 'returns the distance between two addresses' do
       expect(detroit.miles_to(kansas_city)).to be > 0
+    end
+
+    it 'does not attempt to retrieve distances multiple times for the same address' do
+      detroit.distance = 500
+      detroit.instance_variable_set(:@other_address, kansas_city)
+      expect(Geocoder::Calculations).to receive(:distance_between).never
+      detroit.miles_to(kansas_city)
+    end
+  end
+
+  describe 'comparison' do
+    let(:detroit) { FactoryGirl.build :address, :as_detroit, distance: 100 }
+    let(:kansas_city) { FactoryGirl.build :address, :as_kansas_city, distance: 500 }
+    let(:white_house) { FactoryGirl.build :address, distance: 400 }
+    let(:las_vegas)  { FactoryGirl.build :address, distance: 700 }
+
+    it 'sorts them in ascending order' do
+      expect([detroit, kansas_city, white_house, las_vegas].sort).to eq [detroit, white_house, kansas_city, las_vegas]
     end
   end
 end

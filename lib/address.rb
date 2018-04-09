@@ -1,7 +1,7 @@
 require_relative 'geocoding'
 
 class Address
-  attr_accessor :lat, :lng, :full_address
+  attr_accessor :lat, :lng, :full_address, :distance
 
   def initialize(lat: nil, lng: nil, full_address: nil)
     @lat = lat
@@ -16,6 +16,20 @@ class Address
 
   def reverse_geocoded?
     !full_address.nil?
+  end
+
+  def coordinates
+    [lat, lng]
+  end
+
+  def miles_to(other_address)
+    return distance if @distance && (@other_address == other_address)
+    @other_address = other_address
+    @distance = Geocoder::Calculations.distance_between(coordinates, other_address.coordinates)
+  end
+
+  def <=> (other_address)
+    distance <=> other_address.distance
   end
 
   private

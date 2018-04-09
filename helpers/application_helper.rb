@@ -7,9 +7,12 @@ module ApplicationHelper
                   { lat: 35.109937, lng: -89.959983 }
                 ]
 
-  def address_list
-    COORDINATES.each_with_object([]) do |cords, addresses|
-      addresses << Address.new(cords)
-    end
+  def addresses(other_address: '1600 Pennsylvania Avenue NW Washington, D.C. 20500')
+    comparison = Address.new(full_address: other_address)
+    COORDINATES.each_with_object([]) do |cords, arr|
+      address = Address.new(cords)
+      address.miles_to(comparison)
+      arr << address
+    end.sort
   end
 end

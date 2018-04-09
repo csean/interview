@@ -14,8 +14,9 @@
       <th>
         Address
       </th>
+      <th>Distance to White House
     </tr>
-    <% address_list.each do |address| %>
+    <% addresses.each do |address| %>
       <tr>
         <td>
           <%= address.lat %>
@@ -25,6 +26,9 @@
         </td>
         <td>
           <%= address.full_address %>
+        </td>
+        <td>
+          <%= '%.2f' % address.distance %> miles
         </td>
       </tr>
     <% end %>
